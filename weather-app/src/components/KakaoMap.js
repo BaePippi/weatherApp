@@ -17,8 +17,9 @@ function Kakao() {
         pos.coords.longitude
       );
       map.panTo(currentPos);
+      console.log(currentPos)
     }
-
+    
     window.addEventListener("load", (e) => {
       navigator.geolocation.getCurrentPosition(locationLoadSuccess);
     });
