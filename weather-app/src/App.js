@@ -1,11 +1,11 @@
 import Weather from "./components/Weather";
-import KakaoMap from "./components/KakaoMap";
+import Location from "./components/Location";
 
 function App() {
   return (
-    <div className="App">
-      <KakaoMap />
-      <Weather />
+    <div className="App">      
+      {/* <Weather /> */}
+      <Location />
     </div>
   );
 }

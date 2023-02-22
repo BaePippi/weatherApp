@@ -12,7 +12,7 @@ function WeatherApp() {
     const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${API_KEY}&units=metric`;
     const response = await axios.get(url);
     setWeatherData(response.data);
-    console.log(response.data.main.temp);
+    console.log(response.data.main);
     if (response.data.main.temp >= 28) {
       setClothes("민소매, 반팔, 반바지, 짧은 치마, 린넨 옷");
     } else if (response.data.main.temp <= 27 && response.data.main.temp >=23) {
@@ -50,7 +50,7 @@ function WeatherApp() {
       </form>
       {weatherData && (
         <div>
-          <h2>Current Weather in {weatherData.name}</h2>
+          <h2>{weatherData.name}날씨</h2>
           <p>{weatherData.weather[0].description}</p>
           <p>온도: {weatherData.main.temp}°C</p>
           <p>체감기온: {weatherData.main.feels_like}°C</p>
