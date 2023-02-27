@@ -8,6 +8,8 @@ function Location() {
 
   const [weatherData, setWeatherData] = useState({});
   const [clothes, setClothes] = useState({});
+  const [weatherIcon, setWeatherIcon] = useState("");
+  const [windDeg, setWindDeg] = useState("");
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((pos) => {
@@ -22,15 +24,16 @@ function Location() {
     const lat = location.lat;
     const lon = location.lon;
 
-    console.log(lat);
+
     axios
       .get("https://api.openweathermap.org/data/2.5/weather", {
         params: {
           lat: lat,
           lon: lon,
+          lang: "kr",
           units: "metric",
           appid: API_KEY,
-        },
+        }
       })
       .then((res) => {
         setWeatherData(res.data);
@@ -59,9 +62,53 @@ function Location() {
         setClothes("패딩, 두꺼운 코트, 누빔 옷, 기모, 목도리");
       }
     }
+    if (weatherData.weather) {
+      const iconCode = weatherData.weather[0].icon;
+      setWeatherIcon(`http://openweathermap.org/img/wn/${iconCode}@2x.png`);
+    }
+    const WindType = {
+      N0: [0, "북"],
+      NNE: [1, "북북동"],
+      NE: [2, "북동"],
+      ENE: [3, "동북동"],
+      E: [4, "동"],
+      ESE: [5, "동남동"],
+      SE: [6, "남동"],
+      SSE: [7, "남남동"],
+      S: [8, "남"],
+      SSW: [9, "남남서"],
+      SW: [10, "남서"],
+      WSW: [11, "서남서"],
+      W: [12, "서"],
+      WNW: [13, "서북서"],
+      NW: [14, "북서"],
+      NNW: [15, "북북서"],
+      N16: [16, "북"],
+
+      value: function (value) {
+        for (const type in this) {
+          if (this[type][0] === value) {
+            return this[type];
+          }
+        }
+        return null;
+      },
+    };
+
+    function getWindDirection(degree) {
+      const result = Math.floor((degree + 22.5 * 0.5) / 22.5);
+      const windType = WindType.value(result);
+      return windType[1];
+    }
+    if(weatherData.wind){
+      const wd = getWindDirection(weatherData.wind.deg);
+      setWindDeg(wd);
+    }
+    
+
   }, [weatherData]);
   const fetchWeatherData = async (location) => {
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${API_KEY}&units=metric`;
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${API_KEY}&lang=kr&units=metric`;
     const response = await axios.get(url);
     setWeatherData(response.data);
   };
@@ -69,23 +116,34 @@ function Location() {
     e.preventDefault();
     fetchWeatherData(location);
   };
-
+  
   return (
     <div>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
           placeholder="Enter location"
-          onChange={(e) => setLocation(e.target.value)}
+          onChange={(e) => {
+            setLocation(e.target.value)
+          }}
         />
         <button type="submit">Get Weather</button>
       </form>
       {weatherData.main && (
         <div>
           <h2>{weatherData.name}날씨</h2>
-          <p>{weatherData.weather[0].description}</p>
-          <p>온도: {weatherData.main.temp}°C</p>
+          <p>
+            {weatherData.weather[0].description}
+            <img src={weatherIcon}></img>
+          </p>
+          <p>기온: {weatherData.main.temp}°C</p>
           <p>체감기온: {weatherData.main.feels_like}°C</p>
+          <p>습도: {weatherData.main.humidity}%</p>
+          <p>최저기온: {weatherData.main.temp_min}°C</p>
+          <p>
+            바람: {windDeg} {weatherData.wind.speed}m/s
+          </p>
+          {/* <p>강수량: {weatherData.rain}</p> */}
         </div>
       )}
       {clothes[0] && <p>기온별 옷차림: {clothes}</p>}
