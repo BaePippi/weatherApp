@@ -123,8 +123,12 @@ function Location() {
         <input
           type="text"
           placeholder="Enter location"
+          // value={weatherData.name}
           onChange={(e) => {
-            setLocation(e.target.value)
+            clearTimeout(this.setLocationTimeout);
+            this.setLocationTimeout = setTimeout(() => {
+              setLocation(e.target.value);
+            }, 1000);
           }}
         />
         <button type="submit">Get Weather</button>
