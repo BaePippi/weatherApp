@@ -4,7 +4,7 @@ import axios from "axios";
 const API_KEY = "502c6236cb77f41edd4be739de30ed18";
 
 function Location() {
-  const [location, setLocation] = useState(null);
+  const [location, setLocation] = useState("");
 
   const [weatherData, setWeatherData] = useState({});
   const [clothes, setClothes] = useState({});
@@ -18,7 +18,7 @@ function Location() {
   }, []);
 
   useEffect(() => {
-    if (location === null) {
+    if (!location.lat) {
       return;
     }
     const lat = location.lat;
@@ -125,10 +125,7 @@ function Location() {
           placeholder="Enter location"
           // value={weatherData.name}
           onChange={(e) => {
-            clearTimeout(this.setLocationTimeout);
-            this.setLocationTimeout = setTimeout(() => {
               setLocation(e.target.value);
-            }, 1000);
           }}
         />
         <button type="submit">Get Weather</button>
